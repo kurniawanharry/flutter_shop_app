@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_shop_app/providers/cart.dart';
 import 'package:flutter_shop_app/providers/product.dart';
+import 'package:flutter_shop_app/screens/cart_screen.dart';
+import 'package:flutter_shop_app/widgets/app_drawer.dart';
+import 'package:flutter_shop_app/widgets/badge.dart';
 import 'package:flutter_shop_app/widgets/products_item.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/products_grid.dart';
 
@@ -44,12 +49,27 @@ class _ProductsOverviewState extends State<ProductsOverview> {
                 value: FilterOptions.All,
               )
             ],
+          ),
+          Consumer<Cart>(
+            builder: (ctx, cart, ch) => Badge(
+              value: cart.itemCount.toString(),
+              child: ch!,
+            ),
+            child: IconButton(
+              icon: Icon(
+                Icons.shopping_cart,
+              ),
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartScreen.routeName);
+              },
+            ),
           )
         ],
       ),
       body: ProductsGrid(
         showFavs: _showFavoritesOnly,
       ),
+      drawer: AppDrawer(),
     );
   }
 }
