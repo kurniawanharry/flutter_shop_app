@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_shop_app/providers/orders.dart';
 import 'package:flutter_shop_app/providers/products_provider.dart';
 import 'package:flutter_shop_app/screens/cart_screen.dart';
+import 'package:flutter_shop_app/screens/edit_product_screen.dart';
 import 'package:flutter_shop_app/screens/orders_screen.dart';
 import 'package:flutter_shop_app/screens/products_detail_screen.dart';
 import 'package:flutter_shop_app/screens/products_overview_screen.dart';
+import 'package:flutter_shop_app/screens/user_product_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/cart.dart';
@@ -31,6 +33,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'ShopApp',
         theme: ThemeData(
           primarySwatch: Colors.pink,
@@ -42,6 +45,8 @@ class MyApp extends StatelessWidget {
           ProductsDetail.routeName: (context) => ProductsDetail(),
           CartScreen.routeName: (context) => CartScreen(),
           OrderScreen.routeName: (context) => OrderScreen(),
+          UserProductSreen.routeName: (context) => UserProductSreen(),
+          EditProductScreen.routeName: (context) => EditProductScreen(),
         },
       ),
     );
