@@ -125,7 +125,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> removeProduct(String id) async {
     final Url = Uri.parse(
-        'https://flashchat-cc61b-default-rtdb.firebaseio.com/product/$id');
+        'https://flashchat-cc61b-default-rtdb.firebaseio.com/product/$id.json');
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     Product? existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
