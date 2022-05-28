@@ -11,7 +11,7 @@ class ProductsDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productsId = ModalRoute.of(context)?.settings.arguments as String;
-    final loadedDetail = context.read<ProductsProvider>().FindById(productsId);
+    final loadedDetail = context.read<Products>().FindById(productsId);
     return Scaffold(
       appBar: AppBar(
         title: Text(loadedDetail.title),

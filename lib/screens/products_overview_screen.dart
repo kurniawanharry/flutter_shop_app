@@ -30,7 +30,7 @@ class _ProductsOverviewState extends State<ProductsOverview> {
     setState(() {
       _isLoading = true;
     });
-    context.read<ProductsProvider>().fetchAndSetProducts().then((_) {
+    context.read<Products>().fetchAndSetProducts().then((_) {
       setState(() {
         _isLoading = false;
       });

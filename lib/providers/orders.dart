@@ -20,13 +20,49 @@ class OrderItem {
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
 
+  final String? authToken;
+
+  Orders(this.authToken, this._orders);
+
   List<OrderItem> get order {
     return [..._orders];
   }
 
+  Future<void> fetchAndSetOrders() async {
+    final url = Uri.parse(
+        'https://flashchat-cc61b-default-rtdb.firebaseio.com/ordes.json?auth=$authToken');
+    final response = await http.get(url);
+    final List<OrderItem> loadedOrders = [];
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if (extractedData == null) {
+      return;
+    }
+    extractedData.forEach((orderId, orderData) {
+      loadedOrders.add(
+        OrderItem(
+          id: orderId,
+          amount: orderData['amount'],
+          dateTime: DateTime.parse(orderData['dateTime']),
+          products: (orderData['products'] as List<dynamic>)
+              .map(
+                (item) => CartItem(
+                  id: item['id'],
+                  price: item['price'],
+                  quantity: item['quantity'],
+                  title: item['title'],
+                ),
+              )
+              .toList(),
+        ),
+      );
+    });
+    _orders = loadedOrders.reversed.toList();
+    notifyListeners();
+  }
+
   Future<void> addOrder(List<CartItem> cartProduct, double total) async {
     final Url = Uri.parse(
-        'https://flashchat-cc61b-default-rtdb.firebaseio.com/ordes.json');
+        'https://flashchat-cc61b-default-rtdb.firebaseio.com/ordes.json?auth=$authToken');
     final timeStamp = DateTime.now();
     final response = await http.post(Url,
         body: json.encode({

@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_shop_app/providers/product.dart';
 
-class ProductsProvider with ChangeNotifier {
+class Products with ChangeNotifier {
   List<Product> _items = [
     // Product(
     //   id: 'p1',
@@ -41,6 +41,11 @@ class ProductsProvider with ChangeNotifier {
     // ),
   ];
 
+  final String? authToken;
+  final String? userId;
+
+  Products(this.authToken, this.userId, this._items);
+
   List<Product> get items {
     return _items;
   }
@@ -53,18 +58,29 @@ class ProductsProvider with ChangeNotifier {
     return _items.where((product) => product.isFavorite).toList();
   }
 
-  Future<void> fetchAndSetProducts() async {
-    const url =
-        'https://flashchat-cc61b-default-rtdb.firebaseio.com/product.json';
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    final url =
+        'https://flashchat-cc61b-default-rtdb.firebaseio.com/product.json?auth=$authToken&$filterString';
     try {
       final response = await http.get(Uri.parse(url));
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      if (extractedData == null) {
+        return;
+      }
+      final Url = Uri.parse(
+          'https://flashchat-cc61b-default-rtdb.firebaseio.com/userfavocites/$userId.json?auth=$authToken');
+      final favoriteResponse = await http.get(Url);
+      final favoriteData = json.decode(favoriteResponse.body);
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
           id: prodId,
           title: prodData['title'],
           description: prodData['description'],
+          isFavorite:
+              favoriteData == null ? false : favoriteData[prodId] ?? false,
           price: prodData['price'],
           imageUrl: prodData['imageUrl'],
         ));
@@ -78,22 +94,24 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     final url = Uri.parse(
-        'https://flashchat-cc61b-default-rtdb.firebaseio.com/product.json');
+        'https://flashchat-cc61b-default-rtdb.firebaseio.com/product.json?auth=$authToken');
     try {
       final response = await http.post(url,
           body: json.encode({
             'title': product.title,
             'description': product.description,
             'imageUrl': product.imageUrl,
-            'price': product.price
+            'price': product.price,
+            'creatorId': userId,
           }));
 
       final addProd = Product(
-          id: json.decode(response.body)['name'],
-          title: product.title,
-          description: product.description,
-          price: product.price,
-          imageUrl: product.imageUrl);
+        id: json.decode(response.body)['name'],
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+      );
 
       _items.add(addProd);
       notifyListeners();
@@ -107,7 +125,7 @@ class ProductsProvider with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       final Url = Uri.parse(
-          'https://flashchat-cc61b-default-rtdb.firebaseio.com/product/$id.json');
+          'https://flashchat-cc61b-default-rtdb.firebaseio.com/product/$id.json?auth=$authToken');
       http.patch(Url,
           body: json.encode({
             'title': newProdcut.title,
@@ -125,7 +143,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> removeProduct(String id) async {
     final Url = Uri.parse(
-        'https://flashchat-cc61b-default-rtdb.firebaseio.com/product/$id.json');
+        'https://flashchat-cc61b-default-rtdb.firebaseio.com/product/$id.json?auth=$authToken');
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     Product? existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);

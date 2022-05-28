@@ -76,7 +76,7 @@ class _OrderButtonState extends State<OrderButton> {
   var _isLoading = false;
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
+    return ElevatedButton(
       onPressed: (widget.cart.totalAmount <= 0)
           ? null
           : () async {
@@ -95,7 +95,7 @@ class _OrderButtonState extends State<OrderButton> {
           : Text(
               'ORDER NOW',
             ),
-      textColor: Theme.of(context).primaryColor,
+      // textColor: Theme.of(context).primaryColor,
     );
   }
 }

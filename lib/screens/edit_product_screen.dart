@@ -63,7 +63,7 @@ class _EditProductScreen extends State<EditProductScreen> {
           ? 'null'
           : ModalRoute.of(context)?.settings.arguments as String;
       if (productId != 'null') {
-        _editedProduct = context.read<ProductsProvider>().FindById(productId);
+        _editedProduct = context.read<Products>().FindById(productId);
         _isInitValues = {
           'title': _editedProduct.title,
           'description': _editedProduct.description,
@@ -103,7 +103,7 @@ class _EditProductScreen extends State<EditProductScreen> {
     });
     if (_editedProduct.id != '0') {
       await context
-          .read<ProductsProvider>()
+          .read<Products>()
           .updateProduct(_editedProduct.id, _editedProduct);
       setState(() {
         _isLoading = false;
@@ -111,7 +111,7 @@ class _EditProductScreen extends State<EditProductScreen> {
       Navigator.of(context).pop();
     } else {
       try {
-        await context.read<ProductsProvider>().addProduct(_editedProduct);
+        await context.read<Products>().addProduct(_editedProduct);
       } catch (error) {
         //Show Dialog didnt show up, Bug
         return showDialog(
@@ -120,7 +120,7 @@ class _EditProductScreen extends State<EditProductScreen> {
             title: Text('An Error Accurred'),
             content: Text('Something went wrong!'),
             actions: [
-              FlatButton(
+              ElevatedButton(
                   onPressed: () {
                     print('test');
                     Navigator.of(context).pop();

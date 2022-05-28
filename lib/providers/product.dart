@@ -7,7 +7,7 @@ class Product with ChangeNotifier {
   final String id;
   final String title;
   final String description;
-  final double price;
+  final num price;
   final String imageUrl;
   bool isFavorite;
 
@@ -25,17 +25,17 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleFavorite() async {
+  Future<void> toggleFavorite(String token, String userId) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
     final Url = Uri.parse(
-        'https://flashchat-cc61b-default-rtdb.firebaseio.com/product/$id.json');
+        'https://flashchat-cc61b-default-rtdb.firebaseio.com/userfavocites/$userId/$id.json?auth=$token');
     try {
-      final response = await http.patch(
+      final response = await http.put(
         Url,
         body: json.encode(
-          {'isFavorite': isFavorite},
+          isFavorite,
         ),
       );
       if (response.statusCode >= 400) {
@@ -43,7 +43,7 @@ class Product with ChangeNotifier {
       }
     } catch (error) {
       isFavorite = oldStatus;
-      notifyListeners();
+      // notifyListeners();
     }
   }
 }

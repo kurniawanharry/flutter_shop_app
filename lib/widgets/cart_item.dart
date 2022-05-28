@@ -16,7 +16,7 @@ class CartItem extends StatelessWidget {
   final String id;
   final String productId;
   final String title;
-  final double price;
+  final num price;
   final int quantity;
 
   @override
@@ -35,13 +35,13 @@ class CartItem extends StatelessWidget {
                 title: Text('Are you sure ?'),
                 content: Text('Do you want to remove the item from the cart ?'),
                 actions: [
-                  FlatButton(
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.of(ctx).pop(false);
                     },
                     child: Text('No'),
                   ),
-                  FlatButton(
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.of(ctx).pop(true);
                     },
